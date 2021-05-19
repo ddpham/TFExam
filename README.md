@@ -15,4 +15,4 @@ Thông tin chi tiết về hướng dẫn cài đặt cho cuộc thi, bạn có 
 
 # Dữ liệu
 
-Trong bài viết này, tôi có sử dụng dữ liệu của [Kaggle](https://www.kaggle.com/rmisra/news-headlines-dataset-for-sarcasm-detection), được tạo ra từ tác giả [Rishabh Misra](https://rishabhmisra.github.io/).
+Trong bài viết này, tôi có sử dụng tập dữ liệu ["News Headlines Dataset For Sarcasm Detection"](https://www.kaggle.com/rmisra/news-headlines-dataset-for-sarcasm-detection) trên [Kaggle](https://www.kaggle.com), tập dữ liệu này được tạo ra bởi tác giả [Rishabh Misra](https://rishabhmisra.github.io/).

@@ -2,7 +2,6 @@ name: dl
 channels:
 - defaults
 - anaconda
-- conda-forge
 dependencies:
 - cudatoolkit
 - tensorflow
@@ -14,3 +13,6 @@ dependencies:
 - scikit-learn
 - pip: 
   - nbdev
+  - tensorflow-datasets
+  - tensorflow-text
+  

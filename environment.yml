@@ -1,18 +1,22 @@
-name: dl
+name: tf
 channels:
 - defaults
 - anaconda
+- conda-forge
 dependencies:
 - cudatoolkit
 - tensorflow
+- python==3.8
 - keras
 - numpy
 - pandas
 - matplotlib
 - urllib3
 - scikit-learn
-- pip: 
+- jupyter 
+- jupyterlab
+- pip
+- pip:
   - nbdev
   - tensorflow-datasets
   - tensorflow-text
-  

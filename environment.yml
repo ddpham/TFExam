@@ -4,9 +4,10 @@ channels:
 - anaconda
 - conda-forge
 dependencies:
-- cudatoolkit=10.2
-- tensorflow=2.4.1
-- python==3.8
+- cudatoolkit
+- tensorflow
+- tensorflow-gpu
+- python=3.8
 - keras
 - numpy
 - pandas

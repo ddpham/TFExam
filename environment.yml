@@ -5,10 +5,7 @@ channels:
 - conda-forge
 dependencies:
 - cudatoolkit
-- tensorflow
-- tensorflow-gpu
 - python=3.8
-- keras
 - numpy
 - pandas
 - matplotlib
@@ -21,3 +18,5 @@ dependencies:
   - nbdev
   - tensorflow-datasets
   - tensorflow-text
+  - tensorflow==2.4.1
+  - tensorflow-gpu==2.4.1

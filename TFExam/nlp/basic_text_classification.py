@@ -3,9 +3,13 @@
 __all__ = ['path', 'url', 'dataset', 'path', 'remove_dir', 'train_ds', 'valid_ds', 'text_cleansing', 'max_features',
            'sequence_length', 'vectorization_layer', 'vectorize_text', 'train_ds', 'valid_ds', 'AUTOTUNE', 'train_ds',
            'valid_ds', 'embedding_dim', 'model', 'epochs', 'plot_history', 'test_ds', 'test_ds', 'exp_model', 'test_ds',
-           'inference_data', 'path', 'url', 'path', 'bs', 'seed', 'train_ds', 'valid_ds', 'raw_text', 'train_ds',
-           'valid_ds', 'train_ds', 'valid_ds', 'embedding_dim', 'model', 'loss', 'optimizer', 'lr_scheduler', 'epochs',
-           'history', 'learning_rate', 'embedding_dim', 'model', 'loss', 'optimizer', 'epochs']
+           'inference_data', 'path', 'url', 'path', 'bs', 'seed', 'train_ds', 'valid_ds', 'max_tokens',
+           'sequence_length', 'vectorization_layer', 'raw_text', 'train_ds', 'valid_ds', 'train_ds', 'valid_ds',
+           'embedding_dim', 'model', 'loss', 'optimizer', 'lr_scheduler', 'epochs', 'history', 'learning_rate',
+           'embedding_dim', 'model', 'loss', 'optimizer', 'epochs', 'inputs', 'embedding_dim', 'embeding', 'lstm',
+           'dropout', 'dense', 'prediction', 'model', 'loss', 'lr_scheduler', 'optimizer', 'epochs', 'history',
+           'inputs', 'embedding_dim', 'embeding', 'lstm', 'dropout', 'dense', 'prediction', 'model', 'loss',
+           'learning_rate', 'optimizer', 'epochs']
 
 # Cell
 import tensorflow as tf
@@ -157,6 +161,9 @@ def plot_history(history: dict, metrics:str='accuracy'):
     plt.tight_layout()
 
 # Cell
+plot_history(model.history.history)
+
+# Cell
 test_ds = keras.preprocessing.text_dataset_from_directory(
     directory=f'{path}/test'
     , labels = 'inferred'
@@ -236,6 +243,18 @@ valid_ds = keras.preprocessing.text_dataset_from_directory(
 )
 
 # Cell
+max_tokens = 10000
+sequence_length = 250
+
+vectorization_layer = keras.layers.experimental.preprocessing.TextVectorization(
+    max_tokens=max_tokens
+    , standardize='lower_and_strip_punctuation'
+    , split='whitespace'
+    , output_mode='int'
+    , output_sequence_length=sequence_length
+)
+
+# Cell
 # Tạo raw text để adapt vectorization layer:
 raw_text = []
 for _, text in train_ds.enumerate():
@@ -299,6 +318,98 @@ model = keras.Sequential([
 loss = keras.losses.CategoricalCrossentropy()
 optimizer = keras.optimizers.RMSprop(learning_rate=learning_rate)
 model.compile(optimizer=optimizer, loss=loss, metrics='accuracy')
+model.summary()
+
+# Cell
+epochs=50
+model.fit(train_ds, epochs=epochs, validation_data=valid_ds)
+
+# Cell
+# Xóa thông tin các model cũ:
+keras.backend.clear_session()
+
+# Tạo input:
+inputs = keras.Input(shape=(250))
+
+# Tạo embeding:
+embedding_dim = 64
+embeding = keras.layers.Embedding(input_dim=max_tokens, output_dim=embedding_dim, input_length=sequence_length)(inputs)
+
+# Tạo Bidirectional LSTM:
+lstm = keras.layers.Bidirectional(keras.layers.LSTM(32))(embeding)
+
+# Tạo dropout:
+dropout = keras.layers.Dropout(0.2)(lstm)
+
+# Tạo dense:
+dense = keras.layers.Dense(20, activation='relu')(dropout)
+
+# Tạo prediction:
+prediction = keras.layers.Dense(4, activation='softmax')(dense)
+
+model = keras.Model(inputs=inputs, outputs=prediction)
+
+# Tạo loss:
+loss = keras.losses.CategoricalCrossentropy(from_logits=True)
+
+# Tạo lr scheduler:
+lr_scheduler = keras.callbacks.LearningRateScheduler(lambda epoch: 10e-8 * 10 ** (epoch/10))
+
+# Tạo optimizer:
+optimizer = keras.optimizers.Adam(learning_rate=10e-8)
+
+# Compile model:
+model.compile(optimizer=optimizer, loss=loss, metrics='accuracy')
+
+model.summary()
+
+# Cell
+epochs=150
+model.fit(train_ds, epochs=epochs, validation_data=valid_ds, callbacks=[lr_scheduler])
+
+# Cell
+# Vẽ đồ thị learning rate và loss:
+history = model.history
+plt.figure(figsize=(8,4))
+plt.semilogx(history.history["lr"], history.history["loss"])
+plt.axis([1e-8, 1e-1, 0, 2])
+plt.show()
+
+# Cell
+# Xóa thông tin các model cũ:
+keras.backend.clear_session()
+
+# Tạo input:
+inputs = keras.Input(shape=(250))
+
+# Tạo embeding:
+embedding_dim = 64
+embeding = keras.layers.Embedding(input_dim=max_tokens, output_dim=embedding_dim, input_length=sequence_length)(inputs)
+
+# Tạo Bidirectional LSTM:
+lstm = keras.layers.Bidirectional(keras.layers.LSTM(32))(embeding)
+
+# Tạo dropout:
+dropout = keras.layers.Dropout(0.2)(lstm)
+
+# Tạo dense:
+dense = keras.layers.Dense(20, activation='relu')(dropout)
+
+# Tạo prediction:
+prediction = keras.layers.Dense(4, activation='softmax')(dense)
+
+model = keras.Model(inputs=inputs, outputs=prediction)
+
+# Tạo loss:
+loss = keras.losses.CategoricalCrossentropy(from_logits=True)
+
+# Tạo optimizer:
+learning_rate=5e-4
+optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
+
+# Compile model:
+model.compile(optimizer=optimizer, loss=loss, metrics='accuracy')
+
 model.summary()
 
 # Cell
